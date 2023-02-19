@@ -1,0 +1,184 @@
+name: kernel-simple
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # Scheduled runs every day at 1am UTC
+  workflow_dispatch:
+
+jobs:
+
+  "Kernel":
+    if: ${{ github.repository_owner == 'armbian' }}
+    strategy:
+      fail-fast: false # let other jobs try to complete if one fails
+      matrix:
+        include:
+          - board: "odroidhc4"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "odroidhc4"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "uefi-arm64"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "uefi-arm64"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "uefi-x86"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "uefi-x86"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "rock-5b"
+            branch: "legacy"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "odroidm1"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "rock-5b"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "rpi4b"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "rpi4b"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "tinkerboard-2"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "tinkerboard-2"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "quartz64a"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "quartz64a"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "tritium-h3"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "tritium-h3"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "tritium-h5"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "tritium-h5"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "clearfogpro"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "clearfogpro"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "tinkerboard"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "tinkerboard"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
+
+          - board: "uefi-riscv64"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "visionfive" # starfive
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "visionfive2" # starfive2
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+          - board: "nezha" # d1
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+
+    runs-on: "${{ matrix.runner_tags }}"
+    name: "${{ matrix.board }} ${{ matrix.branch }} (${{ matrix.variant }})"
+    env:
+      BOARD: "${{ matrix.board }}"
+      BRANCH: "${{ matrix.branch }}"
+      VARIANT: "${{ matrix.variant }}"
+      OCI_TARGET_BASE: "ghcr.io/${{ github.repository }}/" # This is picked up by the Docker launcher automatically
+    steps:
+
+      # Login to ghcr.io, for later uploading rootfs to ghcr.io
+      - name: Docker Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }} # GitHub username or org
+          password: ${{ secrets.GITHUB_TOKEN }}    # GitHub actions builtin token. repo has to have pkg access.
+
+      - name: Checkout build repo
+        uses: actions/checkout@v3 # We don't need to clone git, really. A wget would suffice for GH-hosted runners. But using clone is better for Igor-hosted runners.
+        with:
+          repository: armbian/build #${{ github.repository_owner }}/armbian-build
+          ref: main
+          fetch-depth: 1
+          clean: false # true is default. it *will* delete the hosts /dev if mounted inside.
+
+      - name: Build Kernel ${{env.BOARD}}:${{env.BRANCH}} (variant ${{env.VARIANT}})
+        id: kernel
+        run: |
+          # BRANCH and BOARD are in the env, but Docker doesn't know that; (sudo has --preserve-env). So we need to pass them as args.
+          # let VARIANT expand
+          # SHARE_LOG=yes to share logs to pastebin
+          bash ./compile.sh kernel \
+            "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" ${{env.VARIANT}} \
+            SHARE_LOG=yes
