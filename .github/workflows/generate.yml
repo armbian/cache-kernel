@@ -25,7 +25,7 @@ jobs:
 
           - board: "uefi-arm64"
             branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "uefi-arm64"
@@ -40,7 +40,7 @@ jobs:
 
           - board: "uefi-x86"
             branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "rock-5b"
@@ -50,7 +50,7 @@ jobs:
 
           - board: "odroidm1"
             branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "rock-5b"
@@ -65,7 +65,7 @@ jobs:
 
           - board: "rpi4b"
             branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "tinkerboard-2"
@@ -85,7 +85,7 @@ jobs:
 
           - board: "quartz64a"
             branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "tritium-h3"
@@ -105,7 +105,7 @@ jobs:
 
           - board: "tritium-h5"
             branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "clearfogpro"
@@ -120,7 +120,7 @@ jobs:
 
           - board: "tinkerboard"
             branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
           - board: "tinkerboard"
@@ -145,7 +145,7 @@ jobs:
 
           - board: "nezha" # d1
             branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            runner_tags: [ "self-hosted", "Linux", 'gama' ]
             variant: ""
 
     runs-on: "${{ matrix.runner_tags }}"
