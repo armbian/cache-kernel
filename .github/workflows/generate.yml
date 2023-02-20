@@ -13,6 +13,18 @@ jobs:
       fail-fast: false # let other jobs try to complete if one fails
       matrix:
         include:
+          - board: "rock-5b"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+          - board: "uefi-riscv64"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+          - board: "odroidxu4"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
           - board: "odroidhc4"
             branch: "edge"
             runner_tags: [ "self-hosted", "Linux", 'beta' ]
