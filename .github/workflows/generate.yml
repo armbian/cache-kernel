@@ -21,10 +21,10 @@ jobs:
             branch: "edge"
             runner_tags: [ "self-hosted", "Linux", 'beta' ]
             variant: ""
-          - board: "odroidxu4"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
+#          - board: "odroidxu4"
+#            branch: "edge"
+#            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+#            variant: ""
           - board: "odroidhc4"
             branch: "edge"
             runner_tags: [ "self-hosted", "Linux", 'beta' ]
