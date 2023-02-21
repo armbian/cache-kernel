@@ -21,10 +21,18 @@ jobs:
             branch: "edge"
             runner_tags: [ "self-hosted", "Linux", 'beta' ]
             variant: ""
-#          - board: "odroidxu4"
-#            branch: "edge"
-#            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-#            variant: ""
+          - board: "uefi-riscv64"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+          - board: "onecloud"
+            branch: "edge"
+            runner_tags: [ "self-hosted", "Linux", 'beta' ]
+            variant: ""
+          - board: "onecloud"
+            branch: "current"
+            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
+            variant: ""
           - board: "odroidhc4"
             branch: "edge"
             runner_tags: [ "self-hosted", "Linux", 'beta' ]
