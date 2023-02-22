@@ -59,8 +59,8 @@ jobs:
     needs: [ prepare ]
     name: "${{ matrix.board }} ${{ matrix.branch }} (${{ matrix.variant }})"
     env:
-      BOARD: "${{ matrix.board }}"
       BRANCH: "${{ matrix.branch }}"
+      BOARD: "${{ matrix.board }}"
       OCI_TARGET_BASE: "ghcr.io/${{ github.repository }}/" # This is picked up by the Docker launcher automatically
     steps:
 
