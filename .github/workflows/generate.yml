@@ -7,169 +7,53 @@ on:
 
 jobs:
 
-  "Kernel":
+  prepare:
+
+    name: "Make JSON"
     if: ${{ github.repository_owner == 'armbian' }}
-    strategy:
-      fail-fast: false # let other jobs try to complete if one fails
-      matrix:
-        include:
-          - board: "rock-3a"
-            branch: "legacy"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{steps.json.outputs.JSON_CONTENT}}
+    steps:
 
-          - board: "uefi-riscv64"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-          - board: "uefi-riscv64"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-          - board: "onecloud"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-          - board: "onecloud"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
-          - board: "odroidhc4"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
+      - name: Checkout Armbian Framework
+        uses: actions/checkout@v3.3.0
+        with:
+          repository: armbian/build
+          ref:  main
+          fetch-depth: 1
+          clean: false # true is default. it *will* delete the hosts /dev if mounted inside.
+          path: build
 
-          - board: "odroidhc4"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
+      - name: Checkout Armbian OS
+        uses: actions/checkout@v3.3.0
+        with:
+          repository: armbian/os
+          ref:  main
+          fetch-depth: 1
+          clean: false # true is default. it *will* delete the hosts /dev if mounted inside.
+          path: os
 
-          - board: "uefi-arm64"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
+      - name: Build JSON
+        id: json
+        run: |
+          # Make a list of valid pairs from our config
+          echo 'JSON_CONTENT<<EOF' >> $GITHUB_OUTPUT
+          for BRANCH in legacy current edge; do
+          FILES=$(cat os/targets/*.conf | grep $BRANCH | grep -v "^$" | grep -v "^#" | sed -n $LINE'p' | cut -d " " -f1 | uniq)
+          while IFS= read -r line; do
+          BOARDFAMILY=$(cat build/config/boards/$line.* | grep BOARDFAMILY | cut -d'"' -f2)
+          BOARD=$line
+          source build/config/boards/$line.conf 2> /dev/null || true
+          source build/config/boards/$line.wip 2> /dev/null || true
+	        source build/config/boards/$line.tvb 2> /dev/null
+          source build/config/sources/families/${BOARDFAMILY}.conf 2> /dev/null || true
+		      echo "${LINUXFAMILY}:${BOARDFAMILY}:${BRANCH}:${line}:${ARCH}"
+          done <<< "$FILES"
+          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s\n", "{\"branch\":\""$1"\",", "\"board\":\""$2"\"}" }' | jq -s >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
-          - board: "uefi-arm64"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
-
-          - board: "uefi-x86"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "uefi-x86"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-          - board: "rock-5b"
-            branch: "legacy"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "odroidm1"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-          - board: "rock-5b"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "rpi4b"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "rpi4b"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-          - board: "tinkerboard-2"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "tinkerboard-2"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
-
-          - board: "quartz64a"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "quartz64a"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-          - board: "tritium-h3"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "tritium-h3"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
-
-          - board: "tritium-h5"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "tritium-h5"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-          - board: "clearfogpro"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "clearfogpro"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
-
-          - board: "tinkerboard"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-          - board: "tinkerboard"
-            branch: "current"
-            runner_tags: [ "self-hosted", "Linux", 'alfa' ]
-            variant: ""
-
-          - board: "uefi-riscv64"
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "visionfive" # starfive
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "visionfive2" # starfive2
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'beta' ]
-            variant: ""
-
-          - board: "nezha" # d1
-            branch: "edge"
-            runner_tags: [ "self-hosted", "Linux", 'gama' ]
-            variant: ""
-
-    runs-on: "${{ matrix.runner_tags }}"
+    runs-on: "alfa"
     name: "${{ matrix.board }} ${{ matrix.branch }} (${{ matrix.variant }})"
     env:
       BOARD: "${{ matrix.board }}"
