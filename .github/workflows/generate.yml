@@ -60,7 +60,7 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
         
-    runs-on: "[ ${{ matrix.runner }} ]"
+    runs-on: "${{ matrix.runner }}"
     
     name: "${{ matrix.board }} ${{ matrix.branch }} ${{ matrix.runner }}"
     env:
