@@ -50,7 +50,7 @@ jobs:
               source build/config/sources/families/${BOARDFAMILY}.conf 2> /dev/null || true
               echo "${LINUXFAMILY}:${BOARDFAMILY}:${BRANCH}:${line}:${ARCH}"
               done <<< "$FILES"
-          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s\n", "{\"branch\":\""$1"\",", "\"board\":\""$2"\"}" }' | jq -s >> $GITHUB_OUTPUT
+          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s%s\n", "{\"board\":\""$1"\",", "\"branch\":\""$2"\",", "\"runner\":\""$3"\"}" }' | jq -s >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
   kernel:
     if: ${{ github.repository_owner == 'armbian' }}
@@ -59,8 +59,10 @@ jobs:
       fail-fast: false # let other jobs try to complete if one fails
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    runs-on: "alfa"
-    name: "${{ matrix.board }} ${{ matrix.branch }}"
+        
+    runs-on: "${{ matrix.runner }}"
+    
+    name: "${{ matrix.board }} ${{ matrix.branch }} ${{ matrix.runner }}"
     env:
       BRANCH: "${{ matrix.branch }}"
       BOARD: "${{ matrix.board }}"
