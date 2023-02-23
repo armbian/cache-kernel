@@ -82,7 +82,6 @@ jobs:
           ref: main
           fetch-depth: 1
           clean: false # true is default. it *will* delete the hosts /dev if mounted inside.
-          path: build
 
       - name: Build Kernel ${{env.BOARD}}:${{env.BRANCH}}
         id: kernel
