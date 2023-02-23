@@ -53,13 +53,14 @@ jobs:
           done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s\n", "{\"branch\":\""$1"\",", "\"board\":\""$2"\"}" }' | jq -s >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
   kernel:
-    runs-on: "alfa"
+    if: ${{ github.repository_owner == 'armbian' }}
     needs: [ prepare ]
     strategy:
       fail-fast: false # let other jobs try to complete if one fails
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    name: "${{ matrix.board }} ${{ matrix.branch }} (${{ matrix.variant }})"
+    runs-on: "alfa"
+    name: "${{ matrix.board }} ${{ matrix.branch }}"
     env:
       BRANCH: "${{ matrix.branch }}"
       BOARD: "${{ matrix.board }}"
@@ -81,13 +82,11 @@ jobs:
           ref: main
           fetch-depth: 1
           clean: false # true is default. it *will* delete the hosts /dev if mounted inside.
+          path: build
 
-      - name: Build Kernel ${{env.BOARD}}:${{env.BRANCH}} (variant ${{env.VARIANT}})
+      - name: Build Kernel ${{env.BOARD}}:${{env.BRANCH}}
         id: kernel
         run: |
           # BRANCH and BOARD are in the env, but Docker doesn't know that; (sudo has --preserve-env). So we need to pass them as args.
-          # let VARIANT expand
           # SHARE_LOG=yes to share logs to pastebin
-          bash ./compile.sh kernel \
-            "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" ${{env.VARIANT}} \
-            SHARE_LOG=yes
+          bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes
