@@ -52,7 +52,6 @@ jobs:
               done <<< "$FILES"
           done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s\n", "{\"branch\":\""$1"\",", "\"board\":\""$2"\"}" }' | jq -s >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
-
   kernel:
     runs-on: "alfa"
     needs: [ prepare ]
