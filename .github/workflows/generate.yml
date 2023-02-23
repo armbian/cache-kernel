@@ -50,7 +50,7 @@ jobs:
               source build/config/sources/families/${BOARDFAMILY}.conf 2> /dev/null || true
               echo "${LINUXFAMILY}:${BOARDFAMILY}:${BRANCH}:${line}:${ARCH}"
               done <<< "$FILES"
-          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s%s\n", "{\"board\":\""$1"\",", "\"branch\":\""$2"\",", "\"runner\":\""$3"\"}" }' | jq -s >> $GITHUB_OUTPUT
+          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4,5 | sort | uniq | sed "s/:/ /g" | awk '{ printf "%s%s%s\n", "{\"board\":\""$1"\",", "\"branch\":\""$2"\",", "\"runner\":\""$3"\"}" }' | jq -s >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
   kernel:
     if: ${{ github.repository_owner == 'armbian' }}
@@ -60,7 +60,7 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
         
-    runs-on: "[ ${{ inputs.runner }} ]"
+    runs-on: "[ ${{ matrix.runner }} ]"
     
     name: "${{ matrix.board }} ${{ matrix.branch }} ${{ matrix.runner }}"
     env:
