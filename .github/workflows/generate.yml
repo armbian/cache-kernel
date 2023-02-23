@@ -57,6 +57,10 @@ jobs:
   kernel:
     runs-on: "alfa"
     needs: [ prepare ]
+    strategy:
+      fail-fast: false # let other jobs try to complete if one fails
+      matrix:
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     name: "${{ matrix.board }} ${{ matrix.branch }} (${{ matrix.variant }})"
     env:
       BRANCH: "${{ matrix.branch }}"
