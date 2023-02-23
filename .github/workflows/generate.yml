@@ -46,12 +46,11 @@ jobs:
               BOARD=$line
               source build/config/boards/$line.conf 2> /dev/null || true
               source build/config/boards/$line.wip 2> /dev/null || true
-              source build/config/boards/$line.tvb 2> /dev/null
+              source build/config/boards/$line.tvb 2> /dev/null || true
               source build/config/sources/families/${BOARDFAMILY}.conf 2> /dev/null || true
               echo "${LINUXFAMILY}:${BOARDFAMILY}:${BRANCH}:${line}:${ARCH}"
               done <<< "$FILES"
-          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s\n", "{\"branch\":\""$1"\",", "\"board\":\""$2"\"}" }' | jq -s
-          cat os/targets/*.conf | grep -v "^$" | grep -v "^#" | sed 's/\s\s*/ /g' | cut -d' ' -f1,2 | sed 's/ / /g' | sort | uniq | awk '{ printf "%s%s\n", "{\"board\":\""$1"\",", "\"branch\":\""$2"\"}" }' | jq -s >> $GITHUB_OUTPUT
+          done | sort | uniq | sort -u -t: -k1,3 | cut -d":" -f3,4 | sort | uniq | sed "s/:/ /" | awk '{ printf "%s%s\n", "{\"branch\":\""$1"\",", "\"board\":\""$2"\"}" }' | jq -s >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
   kernel:
     if: ${{ github.repository_owner == 'armbian' }}
