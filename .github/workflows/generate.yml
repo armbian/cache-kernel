@@ -96,4 +96,4 @@ jobs:
         run: |
           # BRANCH and BOARD are in the env, but Docker doesn't know that; (sudo has --preserve-env). So we need to pass them as args.
           # SHARE_LOG=yes to share logs to pastebin
-          bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes
+          bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes CLEAN_LEVEL="alldebs" 
