@@ -97,7 +97,7 @@ jobs:
           # BRANCH and BOARD are in the env, but Docker doesn't know that; (sudo has --preserve-env). So we need to pass them as args.
           # SHARE_LOG=yes to share logs to pastebin
           sudo rm -rf output/debs/* || true
-          bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes CLEAN_LEVEL="alldebs" 
+          bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes CLEAN_LEVEL="alldebs" GITHUB_ACTIONS="false" # GITHUB_ACTIONS = hack, need different solutioon
           ls -l output/debs/
           du output
 
