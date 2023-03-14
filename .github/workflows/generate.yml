@@ -98,6 +98,8 @@ jobs:
           # SHARE_LOG=yes to share logs to pastebin
           sudo rm -rf output/debs/* || true
           bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes CLEAN_LEVEL="alldebs" 
+          ls -l output/debs/
+          du output
 
       - name: Deploy to server
         if: ${{ github.repository_owner == 'Armbian' }}
