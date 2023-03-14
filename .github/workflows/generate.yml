@@ -100,6 +100,14 @@ jobs:
           bash ./compile.sh kernel "BRANCH=${{env.BRANCH}}" "BOARD=${{env.BOARD}}" SHARE_LOG=yes CLEAN_LEVEL="alldebs" GITHUB_ACTIONS="false" # GITHUB_ACTIONS = hack, need different solutioon
           ls -l output/debs/
           du output
+          
+      - name: Install SSH key for storage
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY_TORRENTS }}
+          name: ${{ env.RANDOM }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
+          if_key_exists: replace
 
       - name: Deploy to server
         if: ${{ github.repository_owner == 'Armbian' }}
