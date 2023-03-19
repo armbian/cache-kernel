@@ -119,5 +119,5 @@ jobs:
           if ! command -v "lftp" > /dev/null 2>&1; then
              sudo apt-get -y -qq install lftp
           fi
-          lftp -u upload, -e "set sftp:connect-program ssh -ax -i $HOME/.ssh/${{ env.RANDOM }}; set net:timeout 4;set net:max-retries 6;mirror -R --no-empty-dirs --parallel=8 --no-perms output/debs/*.deb debs-beta/ ;bye" sftp://users.armbian.com
+          lftp -u upload, -e "set sftp:connect-program ssh -ax -i $HOME/.ssh/${{ env.RANDOM }}; set net:timeout 4;set net:max-retries 6;mirror -R --include-glob *.deb --no-empty-dirs --parallel=8 --no-perms output/debs/. debs-beta/ ;bye" sftp://users.armbian.com
    
