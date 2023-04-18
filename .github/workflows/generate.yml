@@ -1,8 +1,8 @@
 name: Make kernel cache
 
 on:
-  schedule:
-    - cron: '0 */8 * * *' # Scheduled every 8 hours
+#  schedule:
+#    - cron: '0 */8 * * *' # Scheduled every 8 hours
   workflow_dispatch:
 
 jobs:
